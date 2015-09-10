@@ -9,6 +9,7 @@ $RoyaleRoundTime = 300;
 
 exec("./support/blendRGBA.cs");
 
+exec("./src/music.cs");
 exec("./src/player.cs");
 exec("./src/game.cs");
 

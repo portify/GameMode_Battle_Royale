@@ -13,6 +13,8 @@ ADDON Print_Letters_Default
 ADDON Weapon_Gun
 ADDON Weapon_Package_Complex
 
+ADDON Script_Footsteps
+
 // Game-Mode Add-On
 ADDON GameMode_Battle_Royale
 

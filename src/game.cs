@@ -1,14 +1,14 @@
 $MaxRoyaleStartMessage = 0;
-$RoyaleStartMessage[$RoyaleStartMessageMax++] = "Dance!";
-$RoyaleStartMessage[$RoyaleStartMessageMax++] = "Fight!";
-$RoyaleStartMessage[$RoyaleStartMessageMax++] = "Go get 'em'!";
-$RoyaleStartMessage[$RoyaleStartMessageMax++] = "Read a book!";
-$RoyaleStartMessage[$RoyaleStartMessageMax++] = "Let the games begin!";
-$RoyaleStartMessage[$RoyaleStartMessageMax++] = "Play hopscotch!";
-$RoyaleStartMessage[$RoyaleStartMessageMax++] = "Last man standing!";
-$RoyaleStartMessage[$RoyaleStartMessageMax++] = "Disprove general relativity!";
-$RoyaleStartMessage[$RoyaleStartMessageMax++] = "Go!";
-$RoyaleStartMessage[$RoyaleStartMessageMax++] = "Play!";
+$RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Dance!";
+$RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Fight!";
+$RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Go get 'em'!";
+$RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Read a book!";
+$RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Let the games begin!";
+$RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Play hopscotch!";
+$RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Last man standing!";
+$RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Disprove general relativity!";
+$RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Go!";
+$RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Play!";
 
 function MiniGameSO::battleRoyaleStartMessage(%this, %step)
 {
@@ -43,6 +43,8 @@ function MiniGameSO::battleRoyaleStartCountdown(%this, %n)
 
     if (%n == 0)
     {
+        %this.play2D(RoyaleRoundStartedSound);
+
         %this.battleRoyaleProhibit = false;
         %this.battleRoyaleGas = $Sim::Time;
 
@@ -148,6 +150,12 @@ $SpawnableItem[$MaxSpawnableItem++] = M1GarandItem;
 $SpawnableItem[$MaxSpawnableItem++] = M24RifleItem;
 $SpawnableItem[$MaxSpawnableItem++] = Remington870Item;
 
+function MiniGameSO::play2D(%this, %profile)
+{
+    for (%i = 0; %i < %this.numMembers; %i++)
+        %this.member[%i].play2D(%profile);
+}
+
 package BattleRoyaleGame
 {
     function MiniGameSO::reset(%this, %client)
@@ -189,7 +197,57 @@ package BattleRoyaleGame
         }
 
         Parent::reset(%this, %client);
+
+        %this.play2D(RoyaleRoundStartingSound);
         %this.battleRoyaleSchedule = %this.schedule(1500, "battleRoyaleStartMessage", 0);
+    }
+
+    function MiniGameSO::checkLastManStanding(%this)
+    {
+        if (%this.owner != 0)
+            return Parent::checkLastManStanding(%this);
+
+        %alive = 0;
+        %last = 0;
+
+        for (%i = 0; %i < %this.numMembers; %i++)
+        {
+            %client = %this.member[%i];
+            %player = %client.player;
+
+            if (isObject(%player))
+            {
+                %alive++;
+                %last = %client;
+            }
+        }
+
+        if (%alive == 0)
+        {
+            %this.play2D(RoyaleRoundDrawSound);
+
+            cancel(%this.battleRoyaleSchedule);
+            %this.chatMessageAll('', "\c5It's a draw. Everyone is dead.");
+            %this.scheduleReset(6000);
+        }
+        else if (%alive == 1 && !%this.battleRoyaleProhibit)
+        {
+            for (%i = 0; %i < %this.numMembers; %i++)
+            {
+                %client = %this.member[%i];
+
+                if (%client != %last)
+                    %client.play2D(RoyaleRoundEndSound);
+            }
+
+            %last.play2D(RoyaleRoundWinSound);
+
+            cancel(%this.battleRoyaleSchedule);
+            %this.chatMessageAll('', "\c3" @ %last.getPlayerName() @ " \c5is the last man standing! They win the round.");
+            %this.scheduleReset(8000);
+        }
+
+        return 0;
     }
 
     function GameConnection::spawnPlayer(%this, %a, %b, %c)
