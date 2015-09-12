@@ -181,11 +181,11 @@ package BattleRoyaleGame
         for (%i = 1; %i <= $MaxSpawnableItem; %i++)
         {
             %spawnChanceMax += $SpawnableChance[%i];
-            talk("spawnChanceInk[" @ $SpawnableItem[%i].getName() @ "] = " @ %spawnChanceMax);
+            // talk("spawnChanceInk[" @ $SpawnableItem[%i].getName() @ "] = " @ %spawnChanceMax);
             %spawnChanceInc[%i] = %spawnChanceMax;
         }
 
-        talk("spawnChanceMax = " @ %spawnChanceMax);
+        // talk("spawnChanceMax = " @ %spawnChanceMax);
 
         %brickGroupCount = MainBrickGroup.getCount();
 
