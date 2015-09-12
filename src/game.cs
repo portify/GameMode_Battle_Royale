@@ -57,20 +57,6 @@ function MiniGameSO::battleRoyaleStartCountdown(%this, %n)
 
             if (isObject(%player))
                 %player.giveBattleRoyaleLoadout();
-
-            // for (%j = 0; %j < 5; %j++)
-            // {
-            //     %player.tool[%j] = HEGrenadeItem.getID();
-            //     messageClient(%client, 'MsgItemPickup', '', %j, HEGrenadeItem.getID(), %j == 0);
-            // }
-
-            // %player.setTool(0, M24RifleItem);
-            // %player.setTool(1, MagazineItem_M24A1);
-            // %player.setTool(2, MagazineItem_M24A1);
-
-            // %player.setTool(0, Colt1911Item);
-            // %player.setTool(1, MagazineItem_45ACP_x7);
-            // %player.setTool(2, MagazineItem_45ACP_x7);
         }
 
         return;
@@ -137,18 +123,36 @@ function Player::setTool(%this, %slot, %data)
 }
 
 $MaxSpawnableItem = 0;
+$SpawnableItem[$MaxSpawnableItem++] = 0; // no item
+$SpawnableChance[$MaxSpawnableItem] = 30;
 $SpawnableItem[$MaxSpawnableItem++] = MagazineItem_45ACP_x7;
+$SpawnableChance[$MaxSpawnableItem] = 12;
 $SpawnableItem[$MaxSpawnableItem++] = MagazineItem_M24A1;
+$SpawnableChance[$MaxSpawnableItem] = 12;
 $SpawnableItem[$MaxSpawnableItem++] = MagazineItem_45ACP_x20_SMG;
+$SpawnableChance[$MaxSpawnableItem] = 12;
 $SpawnableItem[$MaxSpawnableItem++] = MagazineItem_3006_x8;
-// $SpawnableItem[$MaxSpawnableItem++] = MagazineItem_MicroUzi;
+$SpawnableChance[$MaxSpawnableItem] = 12;
+$SpawnableItem[$MaxSpawnableItem++] = MagazineItem_MicroUzi;
+$SpawnableChance[$MaxSpawnableItem] = 12;
 $SpawnableItem[$MaxSpawnableItem++] = HEGrenadeItem;
+$SpawnableChance[$MaxSpawnableItem] = 8;
 $SpawnableItem[$MaxSpawnableItem++] = Colt1911Item;
+$SpawnableChance[$MaxSpawnableItem] = 9;
+$SpawnableItem[$MaxSpawnableItem++] = RevolverItem;
+$SpawnableChance[$MaxSpawnableItem] = 9;
 $SpawnableItem[$MaxSpawnableItem++] = ColtWalkerItem;
+$SpawnableChance[$MaxSpawnableItem] = 5;
 $SpawnableItem[$MaxSpawnableItem++] = ThompsonItem;
+$SpawnableChance[$MaxSpawnableItem] = 8;
 $SpawnableItem[$MaxSpawnableItem++] = M1GarandItem;
+$SpawnableChance[$MaxSpawnableItem] = 7;
 $SpawnableItem[$MaxSpawnableItem++] = M24RifleItem;
+$SpawnableChance[$MaxSpawnableItem] = 6;
 $SpawnableItem[$MaxSpawnableItem++] = Remington870Item;
+$SpawnableChance[$MaxSpawnableItem] = 8;
+$SpawnableItem[$MaxSpawnableItem++] = MicroUziItem;
+$SpawnableChance[$MaxSpawnableItem] = 9;
 
 function MiniGameSO::play2D(%this, %profile)
 {
@@ -171,9 +175,19 @@ package BattleRoyaleGame
         %this.battleRoyaleGas = "";
         cancel(%this.battleRoyaleSchedule);
 
-        %brickGroupCount = MainBrickGroup.getCount();
         %spawnNTName = "_royale_item_spawn";
-        %spawnCount = 0;
+        %spawnChanceMax = 0;
+
+        for (%i = 1; %i <= $MaxSpawnableItem; %i++)
+        {
+            %spawnChanceMax += $SpawnableChance[%i];
+            talk("spawnChanceInk[" @ $SpawnableItem[%i].getName() @ "] = " @ %spawnChanceMax);
+            %spawnChanceInc[%i] = %spawnChanceMax;
+        }
+
+        talk("spawnChanceMax = " @ %spawnChanceMax);
+
+        %brickGroupCount = MainBrickGroup.getCount();
 
         for (%i = 0; %i < %brickGroupCount; %i++)
         {
@@ -183,16 +197,17 @@ package BattleRoyaleGame
             for (%j = 0; %j < %brickCount; %j++)
             {
                 %brick = %brickGroup.NTObject[%spawnNTName, %j];
+                %chance = getRandom() * %spawnChanceMax;
 
-                if (getRandom() > 0.82)
+                for (%k = 1; %k <= $MaxSpawnableItem; %k++)
                 {
-                    %brick.setItem(0);
-                    continue;
+                    if (%chance < %spawnChanceInc[%k])
+                    {
+                        %brick.setItem($SpawnableItem[%k]);
+                        %brick.item.static = false;
+                        break;
+                    }
                 }
-
-                %brick.setItem($SpawnableItem[getRandom(1, $MaxSpawnableItem)]);
-                %brick.item.static = false;
-                %spawnCount++;
             }
         }
 

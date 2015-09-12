@@ -42,6 +42,9 @@ function BattleRoyalePlayer::onDisabled(%this, %obj, %state)
 {
     if (isObject(%obj.client))
     {
+        for (%i = 0; %i < %this.maxTools; %i++)
+            serverCmdDropTool(%obj.client, %i);
+
         // talk("onDisabled with client");
         commandToClient(%obj.client, 'SetVignette', false, "0 0 0 0");
     }
