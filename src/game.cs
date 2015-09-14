@@ -68,7 +68,7 @@ function MiniGameSO::battleRoyaleStartCountdown(%this, %n)
 
 function Player::giveBattleRoyaleLoadout(%this)
 {
-    %variant = getRandom(1, 7);
+    %variant = getRandom(1, 8);
 
     switch (%variant)
     {
@@ -103,6 +103,12 @@ function Player::giveBattleRoyaleLoadout(%this)
                 %this.setTool(%i + 1, MagazineItem_45ACP_x20_SMG);
 
         case 7:
+            %this.setTool(0, MicroUziItem);
+            %mags = getRandom(1, 3);
+            for (%i = 0; %i < %mags; %i++)
+                %this.setTool(%i + 1, MagazineItem_MicroUzi);
+
+        case 8:
             %count = getRandom(1, 3);
             for (%i = 0; %i < %count; %i++)
                 %this.setTool(%i, HEGrenadeItem);
@@ -136,6 +142,8 @@ $SpawnableChance[$MaxSpawnableItem] = 12;
 $SpawnableItem[$MaxSpawnableItem++] = MagazineItem_MicroUzi;
 $SpawnableChance[$MaxSpawnableItem] = 12;
 $SpawnableItem[$MaxSpawnableItem++] = HEGrenadeItem;
+$SpawnableChance[$MaxSpawnableItem] = 8;
+$SpawnableItem[$MaxSpawnableItem++] = MagazineItem_MicroUziExtended;
 $SpawnableChance[$MaxSpawnableItem] = 8;
 $SpawnableItem[$MaxSpawnableItem++] = Colt1911Item;
 $SpawnableChance[$MaxSpawnableItem] = 9;
