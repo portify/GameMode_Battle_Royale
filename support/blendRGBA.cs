@@ -7,7 +7,7 @@ function blendRGBA(%bg, %fg)
 
 	%r = getWord(%fg, 0) * %fa / %a + getWord(%bg, 0) * %ba * (1 - %fa) / %a;
 	%g = getWord(%fg, 1) * %fa / %a + getWord(%bg, 1) * %ba * (1 - %fa) / %a;
-	%b = getWord(%fg, 2) * %fa / %a + getWord(%bg, 0) * %ba * (1 - %fa) / %a;
+	%b = getWord(%fg, 2) * %fa / %a + getWord(%bg, 2) * %ba * (1 - %fa) / %a;
 
 	return %r SPC %g SPC %b SPC %a;
 }

@@ -12,120 +12,122 @@ $RoyaleStartMessage[$MaxRoyaleStartMessage++] = "Play!";
 
 function MiniGameSO::battleRoyaleStartMessage(%this, %step)
 {
-    cancel(%this.battleRoyaleSchedule);
+	cancel(%this.battleRoyaleSchedule);
 
-    %text = "<font:palatino linotype:48><color:aaaaaa>Welcome to\n";
-    %time = 1;
+	%text = "<font:palatino linotype:48><color:aaaaaa>Welcome to\n";
+	%time = 1;
 
-    if (%step >= 1)
-    {
-        %text = %text @ "<font:impact:96><color:ff6666>BATTLE ROYALE\n";
-        %time = 2;
-    }
+	if (%step >= 1)
+	{
+		%text = %text @ "<font:impact:96><color:ff6666>BATTLE ROYALE\n";
+		%time = 2;
+	}
 
-    if (%step >= 2)
-    {
-        %text = %text @ "<font:palatino linotype:32>\n\c6The round will start in 20 seconds";
-        %time = 4;
-    }
+	if (%step >= 2)
+	{
+		%text = %text @ "<font:palatino linotype:32>\n\c6The round will start in 20 seconds";
+		%time = 4;
+	}
 
-    %this.centerPrintAll(%text, %time + 1);
+	%this.centerPrintAll(%text, %time + 1);
 
-    if (%step >= 2)
-        %this.battleRoyaleSchedule = %this.schedule(20000, "battleRoyaleStartCountdown", 5);
-    else
-        %this.battleRoyaleSchedule = %this.schedule(%time * 1000, "battleRoyaleStartMessage", %step + 1);
+	if (%step >= 2)
+		%this.battleRoyaleSchedule = %this.schedule(20000, "battleRoyaleStartCountdown", 5);
+	else
+		%this.battleRoyaleSchedule = %this.schedule(%time * 1000, "battleRoyaleStartMessage", %step + 1);
 }
 
 function MiniGameSO::battleRoyaleStartCountdown(%this, %n)
 {
-    cancel(%this.battleRoyaleSchedule);
+	cancel(%this.battleRoyaleSchedule);
 
-    if (%n == 0)
-    {
-        %this.play2D(RoyaleRoundStartedSound);
+	if (%n == 0)
+	{
+		%this.play2D(RoyaleRoundStartedSound);
 
-        %this.battleRoyaleProhibit = false;
-        %this.battleRoyaleGas = $Sim::Time;
+		%this.battleRoyaleProhibit = false;
+		%this.battleRoyaleGas = $Sim::Time;
 
-        %this.centerPrintAll("<font:palatino linotype:64><color:FFAAAA>" @ $RoyaleStartMessage[getRandom(1, $MaxRoyaleStartMessage)], 2);
+		%this.centerPrintAll("<font:palatino linotype:64><color:FFAAAA>" @ $RoyaleStartMessage[getRandom(1, $MaxRoyaleStartMessage)], 2);
 
-        for (%i = 0; %i < %this.numMembers; %i++)
-        {
-            %client = %this.member[%i];
-            %player = %client.player;
+		for (%i = 0; %i < %this.numMembers; %i++)
+		{
+			%client = %this.member[%i];
+			%player = %client.player;
 
-            if (isObject(%player))
-                %player.giveBattleRoyaleLoadout();
-        }
+			if (isObject(%player))
+				%player.giveBattleRoyaleLoadout();
+		}
 
-        return;
-    }
+		return;
+	}
 
-    %this.centerPrintAll("<font:impact:" @ (64 + 16 * (5 - %n)) @ ">\c6" @ %n @ "\n", 2);
-    %this.battleRoyaleSchedule = %this.schedule(1000, "battleRoyaleStartCountdown", %n - 1);
+	%this.centerPrintAll("<font:impact:" @ (64 + 16 * (5 - %n)) @ ">\c6" @ %n @ "\n", 2);
+	%this.battleRoyaleSchedule = %this.schedule(1000, "battleRoyaleStartCountdown", %n - 1);
 }
 
 function Player::giveBattleRoyaleLoadout(%this)
 {
-    %variant = getRandom(1, 8);
+	%variant = getRandom(1, 8);
 
-    switch (%variant)
-    {
-        case 1:
-            %this.setTool(0, Colt1911Item);
-            %mags = getRandom(1, 4);
-            for (%i = 0; %i < %mags; %i++)
-                %this.setTool(%i + 1, MagazineItem_45ACP_x7);
+	switch (%variant)
+	{
+		case 1:
+			%this.setTool(0, Colt1911Item);
+			%mags = getRandom(1, 4);
+			for (%i = 0; %i < %mags; %i++)
+				%this.setTool(%i + 1, MagazineItem_45ACP_x7);
 
-        case 2:
-            %this.setTool(0, RevolverItem);
+		case 2:
+			%this.setTool(0, RevolverItem);
+			%this.addBullets(Bullet357Item, getRandom(12,24));
 
-        case 3:
-            %this.setTool(0, Remington870Item);
+		case 3:
+			%this.setTool(0, Remington870Item);
+			%this.addBullets(BulletBuckshotItem, getRandom(12,24));
 
-        case 4:
-            %this.setTool(0, M1GarandItem);
-            %mags = getRandom(1, 3);
-            for (%i = 0; %i < %mags; %i++)
-                %this.setTool(%i + 1, MagazineItem_3006_x8);
+		case 4:
+			%this.setTool(0, M1GarandItem);
+			%mags = getRandom(1, 3);
+			for (%i = 0; %i < %mags; %i++)
+				%this.setTool(%i + 1, MagazineItem_3006_x8);
 
-        case 5:
-            %this.setTool(0, M24RifleItem);
-            %mags = getRandom(1, 2);
-            for (%i = 0; %i < %mags; %i++)
-                %this.setTool(%i + 1, MagazineItem_M24A1);
+		case 5:
+			%this.setTool(0, M24RifleItem);
+			%mags = getRandom(1, 2);
+			for (%i = 0; %i < %mags; %i++)
+				%this.setTool(%i + 1, MagazineItem_M24A1);
 
-        case 6:
-            %this.setTool(0, ThompsonItem);
-            %mags = getRandom(1, 3);
-            for (%i = 0; %i < %mags; %i++)
-                %this.setTool(%i + 1, MagazineItem_45ACP_x20_SMG);
+		case 6:
+			%this.setTool(0, ThompsonItem);
+			%mags = getRandom(1, 3);
+			for (%i = 0; %i < %mags; %i++)
+				%this.setTool(%i + 1, MagazineItem_45ACP_x20_SMG);
 
-        case 7:
-            %this.setTool(0, MicroUziItem);
-            %mags = getRandom(1, 3);
-            for (%i = 0; %i < %mags; %i++)
-                %this.setTool(%i + 1, MagazineItem_MicroUzi);
+		case 7:
+			%this.setTool(0, MicroUziItem);
+			%mags = getRandom(1, 3);
+			for (%i = 0; %i < %mags; %i++)
+				%this.setTool(%i + 1, MagazineItem_MicroUzi);
 
-        case 8:
-            %count = getRandom(1, 3);
-            for (%i = 0; %i < %count; %i++)
-                %this.setTool(%i, HEGrenadeItem);
-    }
+		case 8:
+			%count = getRandom(1, 3);
+			for (%i = 0; %i < %count; %i++)
+				%this.setTool(%i, HEGrenadeItem);
+	}
 }
 
 function Player::setTool(%this, %slot, %data)
 {
-    %this.tool[%slot] = %data.getID();
+	%this.tool[%slot] = %data.getID();
 
-    if (isObject(%this.itemProps[%slot]))
-        %this.itemProps[%slot].delete();
+	if (isObject(%this.itemProps[%slot]))
+		%this.itemProps[%slot].delete();
 
-    if (isObject(%this.client))
-    {
-        messageClient(%this.client, 'MsgItemPickup', '', %slot, %data.getID());
-    }
+	if (isObject(%this.client))
+	{
+		messageClient(%this.client, 'MsgItemPickup', '', %slot, %data.getID());
+	}
 }
 
 $MaxSpawnableItem = 0;
@@ -161,186 +163,220 @@ $SpawnableItem[$MaxSpawnableItem++] = Remington870Item;
 $SpawnableChance[$MaxSpawnableItem] = 8;
 $SpawnableItem[$MaxSpawnableItem++] = MicroUziItem;
 $SpawnableChance[$MaxSpawnableItem] = 9;
+// $SpawnableItem[$MaxSpawnableItem++] = Bullet357Item;
+// $SpawnableIsAmmo[$MaxSpawnableItem] = true;
+// $SpawnableChance[$MaxSpawnableItem] = 12;
+// $SpawnableItem[$MaxSpawnableItem++] = BulletBuckshotItem;
+// $SpawnableIsAmmo[$MaxSpawnableItem] = true;
+// $SpawnableChance[$MaxSpawnableItem] = 12;
 
 function MiniGameSO::play2D(%this, %profile)
 {
-    for (%i = 0; %i < %this.numMembers; %i++)
-        %this.member[%i].play2D(%profile);
+	for (%i = 0; %i < %this.numMembers; %i++)
+		%this.member[%i].play2D(%profile);
 }
 
 package BattleRoyaleGame
 {
-    function MiniGameSO::reset(%this, %client)
-    {
-        if (%this.owner != 0)
-            return Parent::reset(%this, %client);
+	function MiniGameSO::reset(%this, %client)
+	{
+		if (%this.owner != 0)
+			return Parent::reset(%this, %client);
 
-        if (!isObject(%this.battleRoyaleCleanup))
-            %this.battleRoyaleCleanup = new SimSet();
+		if (!isObject(%this.battleRoyaleCleanup))
+			%this.battleRoyaleCleanup = new SimSet();
 
-        %this.battleRoyaleCleanup.deleteAll();
-        %this.battleRoyaleProhibit = true;
-        %this.battleRoyaleGas = "";
-        cancel(%this.battleRoyaleSchedule);
+		%this.battleRoyaleCleanup.deleteAll();
+		%this.battleRoyaleProhibit = true;
+		%this.battleRoyaleGas = "";
+		cancel(%this.battleRoyaleSchedule);
 
-        %spawnNTName = "_royale_item_spawn";
-        %spawnChanceMax = 0;
+		%spawnNTName = "_royale_item_spawn";
+		%spawnChanceMax = 0;
 
-        for (%i = 1; %i <= $MaxSpawnableItem; %i++)
-        {
-            %spawnChanceMax += $SpawnableChance[%i];
-            // talk("spawnChanceInk[" @ $SpawnableItem[%i].getName() @ "] = " @ %spawnChanceMax);
-            %spawnChanceInc[%i] = %spawnChanceMax;
-        }
+		for (%i = 1; %i <= $MaxSpawnableItem; %i++)
+		{
+			%spawnChanceMax += $SpawnableChance[%i];
+			// talk("spawnChanceInk[" @ $SpawnableItem[%i].getName() @ "] = " @ %spawnChanceMax);
+			%spawnChanceInc[%i] = %spawnChanceMax;
+		}
 
-        // talk("spawnChanceMax = " @ %spawnChanceMax);
+		// talk("spawnChanceMax = " @ %spawnChanceMax);
 
-        %brickGroupCount = MainBrickGroup.getCount();
+		%brickGroupCount = MainBrickGroup.getCount();
 
-        for (%i = 0; %i < %brickGroupCount; %i++)
-        {
-            %brickGroup = MainBrickGroup.getObject(%i);
-            %brickCount = %brickGroup.NTObjectCount[%spawnNTName];
+		for (%i = 0; %i < %brickGroupCount; %i++)
+		{
+			%brickGroup = MainBrickGroup.getObject(%i);
+			%brickCount = %brickGroup.NTObjectCount[%spawnNTName];
 
-            for (%j = 0; %j < %brickCount; %j++)
-            {
-                %brick = %brickGroup.NTObject[%spawnNTName, %j];
-                %chance = getRandom() * %spawnChanceMax;
+			for (%j = 0; %j < %brickCount; %j++)
+			{
+				%brick = %brickGroup.NTObject[%spawnNTName, %j];
+				%chance = getRandom() * %spawnChanceMax;
 
-                for (%k = 1; %k <= $MaxSpawnableItem; %k++)
-                {
-                    if (%chance < %spawnChanceInc[%k])
-                    {
-                        %brick.setItem($SpawnableItem[%k]);
-                        %brick.item.static = false;
-                        break;
-                    }
-                }
-            }
-        }
+				for (%k = 1; %k <= $MaxSpawnableItem; %k++)
+				{
+					if (%chance < %spawnChanceInc[%k])
+					{
+						// if ($SpawnableIsAmmo[%k])
+						// {
+						// 	%max = getRandom(2,4);
+						// 	for (%i=1;%i<=%max;%i++)
+						// 	{
+						// 		%item = new Item()
+						// 		{
+						// 			dataBlock = $SpawnableItem[%k];
 
-        Parent::reset(%this, %client);
+						// 			position = %brick.getPosition();
+						// 		};
+						// 		%spread = 15;
+						// 		%scalars = getRandomScalar() SPC getRandomScalar() SPC getRandomScalar();
+						// 		%spread = vectorScale(%scalars, mDegToRad(%spread / 2));
 
-        %this.play2D(RoyaleRoundStartingSound);
-        %this.battleRoyaleSchedule = %this.schedule(1500, "battleRoyaleStartMessage", 0);
-    }
+						// 		%vector = "0 0 10";
+						// 		%matrix = matrixCreateFromEuler(%spread);
+						// 		%vel = matrixMulVector(%matrix, %vector);
+						// 		%item.setVelocity(%vel);
+						// 		%position = getWords(%item.getTransform(), 0, 2);
+						// 		%item.setTransform(%position SPC eulerToAxis("0 0" SPC getRandom() * 360 - 180));
+						// 	}
+						// }
+						// else
+						// {
+						%brick.setItem($SpawnableItem[%k]);
+						%brick.item.static = false;
+						// }
+						break;
+					}
+				}
+			}
+		}
 
-    function MiniGameSO::checkLastManStanding(%this)
-    {
-        if (%this.owner != 0)
-            return Parent::checkLastManStanding(%this);
+		Parent::reset(%this, %client);
 
-        %alive = 0;
-        %last = 0;
+		%this.play2D(RoyaleRoundStartingSound);
+		%this.battleRoyaleSchedule = %this.schedule(1500, "battleRoyaleStartMessage", 0);
+	}
 
-        for (%i = 0; %i < %this.numMembers; %i++)
-        {
-            %client = %this.member[%i];
-            %player = %client.player;
+	function MiniGameSO::checkLastManStanding(%this)
+	{
+		if (%this.owner != 0)
+			return Parent::checkLastManStanding(%this);
 
-            if (isObject(%player))
-            {
-                %alive++;
-                %last = %client;
-            }
-        }
+		%alive = 0;
+		%last = 0;
 
-        if (%alive == 0)
-        {
-            %this.play2D(RoyaleRoundDrawSound);
+		for (%i = 0; %i < %this.numMembers; %i++)
+		{
+			%client = %this.member[%i];
+			%player = %client.player;
 
-            cancel(%this.battleRoyaleSchedule);
-            %this.chatMessageAll('', "\c5It's a draw. Everyone is dead.");
-            %this.scheduleReset(6000);
-        }
-        else if (%alive == 1 && !%this.battleRoyaleProhibit)
-        {
-            for (%i = 0; %i < %this.numMembers; %i++)
-            {
-                %client = %this.member[%i];
+			if (isObject(%player))
+			{
+				%alive++;
+				%last = %client;
+			}
+		}
 
-                if (%client != %last)
-                    %client.play2D(RoyaleRoundEndSound);
-            }
+		if (%alive == 0)
+		{
+			%this.play2D(RoyaleRoundDrawSound);
 
-            %last.play2D(RoyaleRoundWinSound);
+			cancel(%this.battleRoyaleSchedule);
+			%this.chatMessageAll('', "\c5It's a draw. Everyone is dead.");
+			%this.scheduleReset(6000);
+		}
+		else if (%alive == 1 && !%this.battleRoyaleProhibit)
+		{
+			for (%i = 0; %i < %this.numMembers; %i++)
+			{
+				%client = %this.member[%i];
 
-            cancel(%this.battleRoyaleSchedule);
-            %this.chatMessageAll('', "\c3" @ %last.getPlayerName() @ " \c5is the last man standing! They win the round.");
-            %this.scheduleReset(8000);
-        }
+				if (%client != %last)
+					%client.play2D(RoyaleRoundEndSound);
+			}
 
-        return 0;
-    }
+			%last.play2D(RoyaleRoundWinSound);
 
-    function GameConnection::spawnPlayer(%this, %a, %b, %c)
-    {
-        Parent::spawnPlayer(%this, %a, %b, %c);
+			cancel(%this.battleRoyaleSchedule);
+			%this.chatMessageAll('', "\c3" @ %last.getPlayerName() @ " \c5is the last man standing! They win the round.");
+			%this.scheduleReset(8000);
+		}
 
-        if (isObject(%this.player) && isObject(%this.miniGame) && %this.miniGame.owner == 0)
-        {
-            %this.player.setShapeNameDistance(15);
-        }
-    }
+		return 0;
+	}
 
-    function Armor::onCollision(%this, %obj, %col, %a, %b, %c)
-    {
-        if (%obj.client.miniGame.battleRoyaleProhibit && %col.getClassName() $= "Item")
-            return;
+	function GameConnection::spawnPlayer(%this, %a, %b, %c)
+	{
+		Parent::spawnPlayer(%this, %a, %b, %c);
 
-        Parent::onCollision(%this, %obj, %col, %a, %b, %c);
-    }
+		if (isObject(%this.player) && isObject(%this.miniGame) && %this.miniGame.owner == 0)
+		{
+			%this.player.setShapeNameDistance(15);
+		}
+	}
 
-    function Armor::damage(%this, %obj, %source, %position, %damage, %damageType)
-    {
-        if (%obj.client.miniGame.battleRoyaleProhibit)
-            return;
+	function Armor::onCollision(%this, %obj, %col, %a, %b, %c)
+	{
+		if (%obj.client.miniGame.battleRoyaleProhibit && %col.getClassName() $= "Item")
+			return;
 
-        return Parent::damage(%this, %obj, %source, %position, %damage, %damageType);
-    }
+		Parent::onCollision(%this, %obj, %col, %a, %b, %c);
+	}
 
-    function serverCmdDropTool(%client, %slot)
-    {
-        $DropToolMiniGame = %client.miniGame;
-        Parent::serverCmdDropTool(%client, %slot);
-        $DropToolMiniGame = "";
-    }
+	function Armor::damage(%this, %obj, %source, %position, %damage, %damageType)
+	{
+		if (%obj.client.miniGame.battleRoyaleProhibit)
+			return;
 
-    function ItemData::onAdd(%this, %obj)
-    {
-        if (isObject($DropToolMiniGame))
-            %obj.miniGame = $DropToolMiniGame;
+		return Parent::damage(%this, %obj, %source, %position, %damage, %damageType);
+	}
 
-        Parent::onAdd(%this, %obj);
-    }
+	function serverCmdDropTool(%client, %slot)
+	{
+		$DropToolMiniGame = %client.miniGame;
+		Parent::serverCmdDropTool(%client, %slot);
+		$DropToolMiniGame = "";
+	}
 
-    function Item::schedulePop(%this)
-    {
-        if (isObject(%this.miniGame.battleRoyaleCleanup))
-        {
-            %this.miniGame.battleRoyaleCleanup.add(%this);
-            return;
-        }
+	function ItemData::onAdd(%this, %obj)
+	{
+		if (isObject($DropToolMiniGame))
+			%obj.miniGame = $DropToolMiniGame;
+		if (%this.canPickup !$= "")
+			%item.canPickup = %this.canPickup;
 
-        Parent::schedulePop(%this);
-    }
+		Parent::onAdd(%this, %obj);
+	}
 
-    function Armor::onDisabled(%this, %obj, %state)
-    {
-        if (isObject(%obj.client.miniGame.battleRoyaleCleanup))
-        {
-            %obj.client.miniGame.battleRoyaleCleanup.add(%obj);
-            %obj.isBattleRoyaleBody = true;
-        }
+	function Item::schedulePop(%this)
+	{
+		if (isObject(%this.miniGame.battleRoyaleCleanup))
+		{
+			%this.miniGame.battleRoyaleCleanup.add(%this);
+			return;
+		}
 
-        Parent::onDisabled(%this, %obj, %state);
-    }
+		Parent::schedulePop(%this);
+	}
 
-    function Player::removeBody(%this)
-    {
-        if (!%this.isBattleRoyaleBody)
-            Parent::removeBody(%this);
-    }
+	function Armor::onDisabled(%this, %obj, %state)
+	{
+		if (isObject(%obj.client.miniGame.battleRoyaleCleanup))
+		{
+			%obj.client.miniGame.battleRoyaleCleanup.add(%obj);
+			%obj.isBattleRoyaleBody = true;
+		}
+
+		Parent::onDisabled(%this, %obj, %state);
+	}
+
+	function Player::removeBody(%this)
+	{
+		if (!%this.isBattleRoyaleBody)
+			Parent::removeBody(%this);
+	}
 };
 
 activatePackage("BattleRoyaleGame");
